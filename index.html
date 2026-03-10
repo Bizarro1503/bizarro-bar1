@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizarro Dive Bar - Control de Gastos</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://www.genspark.ai/api/files/s/AuCXskoL">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0A0A0A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bizarro Bar">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.1/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    
+    <!-- ========================================
+         PANTALLA DE LOGIN
+         ======================================== -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <img src="https://www.genspark.ai/api/files/s/AuCXskoL" alt="Bizarro Dive Bar" class="login-logo-img">
+            </div>
+            
+            <div class="login-subtitle">Control de Gastos</div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user"></i>
+                        Usuario
+                    </label>
+                    <input type="text" id="loginUsername" placeholder="Ingresa tu usuario" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-lock"></i>
+                        Contraseña
+                    </label>
+                    <input type="password" id="loginPassword" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+                
+                <div class="login-demo-users">
+                    <p><strong>Usuarios Demo:</strong></p>
+                    <div class="demo-users-grid">
+                        <button type="button" class="demo-user-btn" onclick="fillDemo('admin', 'admin123')">
+                            <i class="fas fa-crown"></i> admin / admin123
+                        </button>
+                        <button type="button" class="demo-user-btn" onclick="fillDemo('capturista', 'cap123')">
+                            <i class="fas fa-edit"></i> capturista / cap123
+                        </button>
+                        <button type="button" class="demo-user-btn" onclick="fillDemo('consulta', 'cons123')">
+                            <i class="fas fa-eye"></i> consulta / cons123
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- ========================================
+         APLICACIÓN PRINCIPAL
+         ======================================== -->
+    <div id="appContainer" class="app-container" style="display: none;">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="https://www.genspark.ai/api/files/s/AuCXskoL" alt="Bizarro" class="sidebar-logo-img">
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="gastos">
+                    <i class="fas fa-receipt"></i>
+                    <span>Gastos</span>
+                </a>
+                <a href="#" class="nav-item" data-section="proveedores">
+                    <i class="fas fa-truck"></i>
+                    <span>Proveedores</span>
+                </a>
+                <a href="#" class="nav-item" data-section="gastos-fijos">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Gastos Fijos</span>
+                </a>
+                <a href="#" class="nav-item" data-section="empleados">
+                    <i class="fas fa-users"></i>
+                    <span>Empleados</span>
+                </a>
+                <a href="#" class="nav-item" data-section="nomina">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Nómina</span>
+                </a>
+                <a href="#" class="nav-item" data-section="prestamos">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Préstamos</span>
+                </a>
+                <a href="#" class="nav-item" data-section="reportes">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </a>
+                <a href="#" class="nav-item" data-section="configuracion">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button class="btn-logout" id="btnLogout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- HEADER -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 id="pageTitle">Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-details">
+                            <div class="user-name" id="userName">Usuario</div>
+                            <div class="user-role" id="userRole">Admin</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- SECCIONES -->
+            <div class="content-wrapper">
+                
+                <!-- ========================================
+                     SECCIÓN: DASHBOARD
+                     ======================================== -->
+                <section id="section-dashboard" class="content-section active">
+                    
+                    <!-- KPIs Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card gold">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Total Gastos del Mes</div>
+                                <div class="stat-value" id="statTotalGastos">$0.00</div>
+                                <div class="stat-change" id="statTotalChange"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Gastos Fijos</div>
+                                <div class="stat-value" id="statGastosFijos">$0.00</div>
+                                <div class="stat-change" id="statFijosChange"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Nómina del Mes</div>
+                                <div class="stat-value" id="statNomina">$0.00</div>
+                                <div class="stat-change" id="statNominaChange"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-label">Compras del Mes</div>
+                                <div class="stat-value" id="statCompras">$0.00</div>
+                                <div class="stat-change" id="statComprasChange"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gráficas -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Tendencia Mensual</h3>
+                                <p>Últimos 6 meses</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartTendencia"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Distribución por Categoría</h3>
+                                <p>Mes actual</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartCategoria"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Métodos de Pago</h3>
+                                <p>Mes actual</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartMetodoPago"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3>Comparativo Mensual</h3>
+                                <p>Por categoría</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartComparativo"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gastos Recientes -->
+                    <div class="recent-expenses">
+                        <div class="section-header">
+                            <h3>Gastos Recientes</h3>
+                            <button class="btn-secondary" onclick="navigateTo('gastos')">
+                                Ver todos
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Concepto</th>
+                                        <th>Categoría</th>
+                                        <th>Monto</th>
+                                        <th>Método</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentExpensesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: GASTOS
+                     ======================================== -->
+                <section id="section-gastos" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Gestión de Gastos</h3>
+                            <p>Registra y controla todos los gastos del bar</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoGasto">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Gasto
+                        </button>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div class="filters-card">
+                        <div class="filters-row">
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-search"></i>
+                                    Buscar
+                                </label>
+                                <input type="text" id="filterBusqueda" placeholder="Concepto, proveedor...">
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-tags"></i>
+                                    Categoría
+                                </label>
+                                <select id="filterCategoria">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-credit-card"></i>
+                                    Método de Pago
+                                </label>
+                                <select id="filterMetodo">
+                                    <option value="">Todos los métodos</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="transferencia">Transferencia</option>
+                                    <option value="tarjeta">Tarjeta</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-calendar"></i>
+                                    Mes
+                                </label>
+                                <input type="month" id="filterMes">
+                            </div>
+                        </div>
+                        
+                        <div class="filters-actions">
+                            <button class="btn-secondary" id="btnLimpiarFiltros">
+                                <i class="fas fa-times"></i>
+                                Limpiar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla de Gastos -->
+                    <div class="data-card">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Concepto</th>
+                                        <th>Categoría</th>
+                                        <th>Proveedor</th>
+                                        <th>Monto</th>
+                                        <th>Método</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gastosTable"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="table-pagination">
+                            <div class="pagination-info">
+                                Mostrando <span id="paginationInfo">0</span> gastos
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="btn-icon" id="btnPrevPage">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span id="currentPageInfo">Página 1</span>
+                                <button class="btn-icon" id="btnNextPage">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: PROVEEDORES
+                     ======================================== -->
+                <section id="section-proveedores" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Gestión de Proveedores</h3>
+                            <p>Administra tus proveedores del bar</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoProveedor">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Proveedor
+                        </button>
+                    </div>
+                    
+                    <!-- Búsqueda Proveedores -->
+                    <div class="filters-card">
+                        <div class="filter-group" style="width: 100%; max-width: 400px;">
+                            <label>
+                                <i class="fas fa-search"></i>
+                                Buscar proveedor
+                            </label>
+                            <input type="text" id="filterProveedorBuscar" placeholder="Nombre, contacto, categoría...">
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla de Proveedores -->
+                    <div class="data-card">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Contacto</th>
+                                        <th>Teléfono</th>
+                                        <th>Email</th>
+                                        <th>Categoría</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proveedoresTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: GASTOS FIJOS
+                     ======================================== -->
+                <section id="section-gastos-fijos" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Gastos Fijos Mensuales</h3>
+                            <p>Gastos recurrentes del bar</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoGastoFijo">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Gasto Fijo
+                        </button>
+                    </div>
+                    
+                    <div class="gastos-fijos-grid" id="gastosFijosGrid"></div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: EMPLEADOS
+                     ======================================== -->
+                <section id="section-empleados" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Gestión de Empleados</h3>
+                            <p>Personal del Bizarro Dive Bar</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoEmpleado">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Empleado
+                        </button>
+                    </div>
+                    
+                    <div class="empleados-grid" id="empleadosGrid"></div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: NÓMINA
+                     ======================================== -->
+                <section id="section-nomina" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Control de Nómina</h3>
+                            <p>Pagos mensuales a empleados</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoPagoNomina">
+                            <i class="fas fa-plus"></i>
+                            Registrar Pago
+                        </button>
+                    </div>
+                    
+                    <!-- Filtros Nómina -->
+                    <div class="filters-card">
+                        <div class="filters-row">
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-user"></i>
+                                    Empleado
+                                </label>
+                                <select id="filterNominaEmpleado">
+                                    <option value="">Todos los empleados</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-calendar"></i>
+                                    Período
+                                </label>
+                                <input type="month" id="filterNominaPeriodo">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla de Nómina -->
+                    <div class="data-card">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Empleado</th>
+                                        <th>Período</th>
+                                        <th>Salario Base</th>
+                                        <th>Bonos</th>
+                                        <th>Deducciones</th>
+                                        <th>Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nominaTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: PRÉSTAMOS
+                     ======================================== -->
+                <section id="section-prestamos" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Control de Préstamos</h3>
+                            <p>Préstamos a empleados</p>
+                        </div>
+                        <button class="btn-primary" id="btnNuevoPrestamo">
+                            <i class="fas fa-plus"></i>
+                            Nuevo Préstamo
+                        </button>
+                    </div>
+                    
+                    <!-- Resumen de Préstamos -->
+                    <div class="stats-grid-small">
+                        <div class="stat-card-small">
+                            <div class="stat-value" id="statPrestamosActivos">0</div>
+                            <div class="stat-label">Préstamos Activos</div>
+                        </div>
+                        <div class="stat-card-small">
+                            <div class="stat-value" id="statTotalPrestado">$0.00</div>
+                            <div class="stat-label">Total Prestado</div>
+                        </div>
+                        <div class="stat-card-small">
+                            <div class="stat-value" id="statTotalPagado">$0.00</div>
+                            <div class="stat-label">Total Pagado</div>
+                        </div>
+                        <div class="stat-card-small">
+                            <div class="stat-value" id="statSaldoPendiente">$0.00</div>
+                            <div class="stat-label">Saldo Pendiente</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de Préstamos -->
+                    <div class="prestamos-grid" id="prestamosGrid"></div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: REPORTES
+                     ======================================== -->
+                <section id="section-reportes" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Reportes y Estadísticas</h3>
+                            <p>Análisis detallado de gastos</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-success" id="btnExportarExcel">
+                                <i class="fas fa-file-excel"></i>
+                                Exportar Excel
+                            </button>
+                            <button class="btn-danger" id="btnExportarPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                Exportar PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtros de Reportes -->
+                    <div class="filters-card">
+                        <div class="filters-row">
+                            <div class="filter-group">
+                                <label>
+                                    <i class="fas fa-calendar"></i>
+                                    Período
+                                </label>
+                                <input type="month" id="filterReportePeriodo">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs de Reportes -->
+                    <div class="tabs-container">
+                        <div class="tabs-header">
+                            <button class="tab-btn active" data-tab="reporte-resumen">
+                                <i class="fas fa-chart-pie"></i>
+                                Resumen General
+                            </button>
+                            <button class="tab-btn" data-tab="reporte-categoria">
+                                <i class="fas fa-tags"></i>
+                                Por Categoría
+                            </button>
+                            <button class="tab-btn" data-tab="reporte-proveedor">
+                                <i class="fas fa-truck"></i>
+                                Por Proveedor
+                            </button>
+                            <button class="tab-btn" data-tab="reporte-metodo">
+                                <i class="fas fa-credit-card"></i>
+                                Por Método de Pago
+                            </button>
+                            <button class="tab-btn" data-tab="reporte-tendencia">
+                                <i class="fas fa-chart-line"></i>
+                                Tendencia
+                            </button>
+                            <button class="tab-btn" data-tab="reporte-top">
+                                <i class="fas fa-trophy"></i>
+                                Top 10 Gastos
+                            </button>
+                        </div>
+                        
+                        <div class="tabs-content">
+                            
+                            <!-- Tab: Resumen General -->
+                            <div id="reporte-resumen" class="tab-content active">
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-label">Total de Gastos</div>
+                                        <div class="stat-value" id="reporteTotalGastos">$0.00</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Cantidad de Movimientos</div>
+                                        <div class="stat-value" id="reporteCantidad">0</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Gasto Promedio</div>
+                                        <div class="stat-value" id="reportePromedio">$0.00</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-label">Mayor Gasto</div>
+                                        <div class="stat-value" id="reporteMayor">$0.00</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="charts-grid-2col">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h3>Distribución por Categoría</h3>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="reporteChartCategoria"></canvas>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h3>Métodos de Pago</h3>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="reporteChartMetodo"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Por Categoría -->
+                            <div id="reporte-categoria" class="tab-content">
+                                <div class="data-card">
+                                    <div class="table-responsive">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Categoría</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Total</th>
+                                                    <th>%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="reporteCategoriaTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Por Proveedor -->
+                            <div id="reporte-proveedor" class="tab-content">
+                                <div class="data-card">
+                                    <div class="table-responsive">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Proveedor</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Total</th>
+                                                    <th>Categorías</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="reporteProveedorTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Por Método de Pago -->
+                            <div id="reporte-metodo" class="tab-content">
+                                <div class="data-card">
+                                    <div class="table-responsive">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Método de Pago</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Total</th>
+                                                    <th>%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="reporteMetodoTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Tendencia -->
+                            <div id="reporte-tendencia" class="tab-content">
+                                <div class="chart-card">
+                                    <div class="chart-header">
+                                        <h3>Evolución de Gastos</h3>
+                                        <p>Últimos 6 meses</p>
+                                    </div>
+                                    <div class="chart-container" style="height: 400px;">
+                                        <canvas id="reporteChartTendencia"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Top 10 -->
+                            <div id="reporte-top" class="tab-content">
+                                <div class="data-card">
+                                    <div class="table-responsive">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Fecha</th>
+                                                    <th>Concepto</th>
+                                                    <th>Categoría</th>
+                                                    <th>Proveedor</th>
+                                                    <th>Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="reporteTopTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </section>
+                
+                <!-- ========================================
+                     SECCIÓN: CONFIGURACIÓN
+                     ======================================== -->
+                <section id="section-configuracion" class="content-section">
+                    
+                    <div class="section-header">
+                        <div>
+                            <h3>Configuración del Sistema</h3>
+                            <p>Ajustes del Bizarro Dive Bar</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs de Configuración -->
+                    <div class="tabs-container">
+                        <div class="tabs-header">
+                            <button class="tab-btn active" data-tab="config-negocio">
+                                <i class="fas fa-store"></i>
+                                Información del Negocio
+                            </button>
+                            <button class="tab-btn" data-tab="config-categorias">
+                                <i class="fas fa-tags"></i>
+                                Categorías
+                            </button>
+                            <button class="tab-btn" data-tab="config-datos">
+                                <i class="fas fa-database"></i>
+                                Datos
+                            </button>
+                        </div>
+                        
+                        <div class="tabs-content">
+                            
+                            <!-- Tab: Información del Negocio -->
+                            <div id="config-negocio" class="tab-content active">
+                                <div class="data-card">
+                                    <form id="formConfigNegocio">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Nombre del Negocio</label>
+                                                <input type="text" id="configNombreNegocio" value="Bizarro Dive Bar" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>RFC / Tax ID</label>
+                                                <input type="text" id="configRFC" placeholder="XAXX010101000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label>Dirección</label>
+                                                <input type="text" id="configDireccion" placeholder="Calle, número, colonia">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Teléfono</label>
+                                                <input type="tel" id="configTelefono" placeholder="(000) 000-0000">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn-primary">
+                                                <i class="fas fa-save"></i>
+                                                Guardar Cambios
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Categorías -->
+                            <div id="config-categorias" class="tab-content">
+                                <div class="data-card">
+                                    <h4>Categorías del Sistema</h4>
+                                    <p class="text-muted">Categorías predefinidas para el Bizarro Dive Bar</p>
+                                    <div class="categorias-list" id="configCategoriasList"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab: Datos -->
+                            <div id="config-datos" class="tab-content">
+                                <div class="data-card">
+                                    <h4>Gestión de Datos</h4>
+                                    <p class="text-muted">Administra los datos del sistema</p>
+                                    
+                                    <div class="config-actions">
+                                        <button class="btn-secondary" id="btnExportarDatos">
+                                            <i class="fas fa-download"></i>
+                                            Exportar Todos los Datos (JSON)
+                                        </button>
+                                        
+                                        <button class="btn-secondary" id="btnCargarDatosDemo">
+                                            <i class="fas fa-database"></i>
+                                            Cargar Datos Demo
+                                        </button>
+                                        
+                                        <button class="btn-danger" id="btnLimpiarDatos">
+                                            <i class="fas fa-trash"></i>
+                                            Limpiar Todos los Datos
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="config-stats">
+                                        <h4>Estadísticas del Sistema</h4>
+                                        <div class="stats-list">
+                                            <div class="stat-item">
+                                                <span>Total de Gastos:</span>
+                                                <strong id="statTotalRegistros">0</strong>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Proveedores:</span>
+                                                <strong id="statTotalProveedores">0</strong>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Empleados:</span>
+                                                <strong id="statTotalEmpleados">0</strong>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span>Préstamos Activos:</span>
+                                                <strong id="statTotalPrestamosActivos">0</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </section>
+                
+            </div>
+            
+        </main>
+        
+    </div>
+    
+    <!-- ========================================
+         MODALES
+         ======================================== -->
+    
+    <!-- Modal: Gasto -->
+    <div id="modalGasto" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalGastoTitle">Nuevo Gasto</h3>
+                <button class="modal-close" onclick="cerrarModal('modalGasto')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formGasto" class="modal-body">
+                <input type="hidden" id="gastoId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha <span class="required">*</span></label>
+                        <input type="date" id="gastoFecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto <span class="required">*</span></label>
+                        <input type="number" id="gastoMonto" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Concepto <span class="required">*</span></label>
+                    <input type="text" id="gastoConcepto" placeholder="Descripción del gasto" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría <span class="required">*</span></label>
+                        <select id="gastoCategoria" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pago <span class="required">*</span></label>
+                        <select id="gastoMetodo" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="tarjeta">Tarjeta</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Proveedor</label>
+                    <select id="gastoProveedor">
+                        <option value="">Sin proveedor</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="gastoObservaciones" rows="3" placeholder="Notas adicionales..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalGasto')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Proveedor -->
+    <div id="modalProveedor" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalProveedorTitle">Nuevo Proveedor</h3>
+                <button class="modal-close" onclick="cerrarModal('modalProveedor')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formProveedor" class="modal-body">
+                <input type="hidden" id="proveedorId">
+                
+                <div class="form-group">
+                    <label>Nombre <span class="required">*</span></label>
+                    <input type="text" id="proveedorNombre" placeholder="Nombre del proveedor" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contacto</label>
+                        <input type="text" id="proveedorContacto" placeholder="Nombre del contacto">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="proveedorTelefono" placeholder="(000) 000-0000">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="proveedorEmail" placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <input type="text" id="proveedorCategoria" placeholder="Bebidas, Alimentos...">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="proveedorActivo" checked>
+                        Proveedor Activo
+                    </label>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalProveedor')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Gasto Fijo -->
+    <div id="modalGastoFijo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Gasto Fijo</h3>
+                <button class="modal-close" onclick="cerrarModal('modalGastoFijo')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formGastoFijo" class="modal-body">
+                <input type="hidden" id="gastoFijoId">
+                
+                <div class="form-group">
+                    <label>Concepto <span class="required">*</span></label>
+                    <input type="text" id="gastoFijoNombre" placeholder="Renta, CFE, Agua..." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monto Mensual <span class="required">*</span></label>
+                        <input type="number" id="gastoFijoMonto" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Día de Pago <span class="required">*</span></label>
+                        <input type="number" id="gastoFijoDia" min="1" max="31" placeholder="1-31" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="gastoFijoCategoria"></select>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalGastoFijo')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Empleado -->
+    <div id="modalEmpleado" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalEmpleadoTitle">Nuevo Empleado</h3>
+                <button class="modal-close" onclick="cerrarModal('modalEmpleado')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formEmpleado" class="modal-body">
+                <input type="hidden" id="empleadoId">
+                
+                <div class="form-group">
+                    <label>Nombre Completo <span class="required">*</span></label>
+                    <input type="text" id="empleadoNombre" placeholder="Nombre completo" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Puesto <span class="required">*</span></label>
+                        <input type="text" id="empleadoPuesto" placeholder="Bartender, Mesero..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="empleadoTelefono" placeholder="(000) 000-0000">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Salario Mensual <span class="required">*</span></label>
+                        <input type="number" id="empleadoSalario" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Ingreso <span class="required">*</span></label>
+                        <input type="date" id="empleadoFechaIngreso" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="empleadoActivo" checked>
+                        Empleado Activo
+                    </label>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalEmpleado')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Pago Nómina -->
+    <div id="modalPagoNomina" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registrar Pago de Nómina</h3>
+                <button class="modal-close" onclick="cerrarModal('modalPagoNomina')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formPagoNomina" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Empleado <span class="required">*</span></label>
+                        <select id="nominaEmpleado" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Pago <span class="required">*</span></label>
+                        <input type="date" id="nominaFecha" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Período <span class="required">*</span></label>
+                    <input type="month" id="nominaPeriodo" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Salario Base</label>
+                        <input type="number" id="nominaSalarioBase" step="0.01" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bonos</label>
+                        <input type="number" id="nominaBonos" step="0.01" min="0" value="0" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Deducciones</label>
+                        <input type="number" id="nominaDeducciones" step="0.01" min="0" value="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Total a Pagar</label>
+                        <input type="number" id="nominaTotal" step="0.01" readonly>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalPagoNomina')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Registrar Pago
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Préstamo -->
+    <div id="modalPrestamo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Préstamo</h3>
+                <button class="modal-close" onclick="cerrarModal('modalPrestamo')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formPrestamo" class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Empleado <span class="required">*</span></label>
+                        <select id="prestamoEmpleado" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha <span class="required">*</span></label>
+                        <input type="date" id="prestamoFecha" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Monto del Préstamo <span class="required">*</span></label>
+                    <input type="number" id="prestamoMonto" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Concepto</label>
+                    <textarea id="prestamoConcepto" rows="3" placeholder="Motivo del préstamo..."></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalPrestamo')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Registrar Préstamo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Abono a Préstamo -->
+    <div id="modalAbonoPrestamo" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3>Registrar Abono</h3>
+                <button class="modal-close" onclick="cerrarModal('modalAbonoPrestamo')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formAbonoPrestamo" class="modal-body">
+                <input type="hidden" id="abonoPrestamoId">
+                
+                <div class="form-group">
+                    <label>Monto del Abono <span class="required">*</span></label>
+                    <input type="number" id="abonoMonto" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Fecha <span class="required">*</span></label>
+                    <input type="date" id="abonoFecha" required>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal('modalAbonoPrestamo')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Registrar Abono
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    
+</body>
+</html>
