@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Instalación - Bizarro Dive Bar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%);
+            color: #FFFFFF;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #1A1A1A;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #F5C518;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #F5C518;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(245, 197, 24, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #B0B0B0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: #2A2A2A;
+            border: 2px solid #3A3A3A;
+            border-radius: 8px;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover {
+            background: #3A3A3A;
+            border-color: #F5C518;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #F5C518 0%, #D4A017 100%);
+            color: #0A0A0A;
+            border-color: #F5C518;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step {
+            background: #2A2A2A;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #F5C518;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #F5C518 0%, #D4A017 100%);
+            color: #0A0A0A;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        .step-title {
+            display: inline-block;
+            font-size: 1.5rem;
+            color: #F5C518;
+            margin-bottom: 1rem;
+        }
+
+        .step-content {
+            margin-top: 1rem;
+            padding-left: 3.5rem;
+        }
+
+        .screenshot {
+            background: #0A0A0A;
+            border: 3px solid #3A3A3A;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshot::before {
+            content: '📸 Captura de Pantalla';
+            display: block;
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .screenshot-content {
+            font-size: 1.1rem;
+            color: #F5C518;
+            font-weight: 500;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            background: #0A0A0A;
+            border: 2px solid #3A3A3A;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            color: #10B981;
+            overflow-x: auto;
+        }
+
+        .file-tree {
+            background: #0A0A0A;
+            border: 2px solid #3A3A3A;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .file-tree-item {
+            color: #F5F5F5;
+            padding: 0.3rem 0;
+            padding-left: 1rem;
+        }
+
+        .file-tree-item.folder {
+            color: #F5C518;
+            font-weight: bold;
+        }
+
+        .file-tree-item.file {
+            color: #10B981;
+        }
+
+        .alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #EF4444;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #FCA5A5;
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10B981;
+            color: #6EE7B7;
+        }
+
+        .alert.info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3B82F6;
+            color: #93C5FD;
+        }
+
+        .alert.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #F59E0B;
+            color: #FCD34D;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #F5C518 0%, #D4A017 100%);
+            color: #0A0A0A;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 197, 24, 0.3);
+        }
+
+        .checklist {
+            background: #2A2A2A;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .checklist-item {
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid #3A3A3A;
+            padding-left: 1rem;
+        }
+
+        .checklist-item.checked {
+            border-left-color: #10B981;
+            color: #6EE7B7;
+        }
+
+        .checklist-item::before {
+            content: '□ ';
+            color: #6B7280;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .checklist-item.checked::before {
+            content: '✓ ';
+            color: #10B981;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
+            border: 3px dashed #F5C518;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .video-placeholder i {
+            font-size: 4rem;
+            color: #F5C518;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            border: 1px solid #3A3A3A;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background: #2A2A2A;
+            color: #F5C518;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #1A1A1A;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #F5C518;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.3rem;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #F5C518;
+            border: 3px solid #0A0A0A;
+        }
+
+        .timeline-time {
+            color: #F5C518;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .step-content {
+                padding-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍺 Guía de Instalación Paso a Paso</h1>
+            <p>Sistema de Control de Gastos - Bizarro Dive Bar</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('github')">GitHub Pages</button>
+            <button class="tab-btn" onclick="showTab('netlify')">Netlify</button>
+            <button class="tab-btn" onclick="showTab('vercel')">Vercel</button>
+            <button class="tab-btn" onclick="showTab('preparacion')">Preparación</button>
+        </div>
+
+        <!-- TAB: PREPARACIÓN -->
+        <div id="tab-preparacion" class="tab-content">
+            <div class="step">
+                <span class="step-number">📦</span>
+                <span class="step-title">Preparar los Archivos</span>
+                <div class="step-content">
+                    <p>Antes de subir tu aplicación, asegúrate de tener todos los archivos necesarios:</p>
+
+                    <div class="file-tree">
+                        <div class="file-tree-item folder">📁 bizarro-bar/</div>
+                        <div class="file-tree-item file">├── 📄 index.html (63.8 KB)</div>
+                        <div class="file-tree-item file">├── 📄 manifest.json (1.0 KB)</div>
+                        <div class="file-tree-item file">├── 📄 README.md (15.0 KB)</div>
+                        <div class="file-tree-item folder">├── 📁 css/</div>
+                        <div class="file-tree-item file">│   └── 📄 style.css (28.8 KB)</div>
+                        <div class="file-tree-item folder">└── 📁 js/</div>
+                        <div class="file-tree-item file">    ├── 📄 data.js (30.7 KB)</div>
+                        <div class="file-tree-item file">    └── 📄 app.js (87.4 KB)</div>
+                    </div>
+
+                    <div class="alert info">
+                        <strong>✅ Verificación:</strong> Asegúrate de que tienes exactamente estos 6 elementos (3 archivos + 2 carpetas)
+                    </div>
+
+                    <div class="checklist">
+                        <h3 style="margin-bottom: 1rem; color: #F5C518;">Checklist de Archivos</h3>
+                        <div class="checklist-item checked">index.html - Archivo principal</div>
+                        <div class="checklist-item checked">manifest.json - Configuración PWA</div>
+                        <div class="checklist-item checked">README.md - Documentación</div>
+                        <div class="checklist-item checked">css/style.css - Estilos</div>
+                        <div class="checklist-item checked">js/data.js - Datos del sistema</div>
+                        <div class="checklist-item checked">js/app.js - Lógica de la aplicación</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">📊</span>
+                <span class="step-title">Comparación de Opciones</span>
+                <div class="step-content">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Plataforma</th>
+                                <th>Facilidad</th>
+                                <th>Velocidad</th>
+                                <th>URL</th>
+                                <th>Tiempo Setup</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>GitHub Pages</strong></td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>usuario.github.io/bizarro-bar</td>
+                                <td>5 minutos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Netlify</strong></td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>bizarro-bar.netlify.app</td>
+                                <td>2 minutos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Vercel</strong></td>
+                                <td>⭐⭐⭐⭐</td>
+                                <td>⭐⭐⭐⭐⭐</td>
+                                <td>bizarro-bar.vercel.app</td>
+                                <td>3 minutos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="alert success">
+                        <strong>🏆 Recomendación:</strong> Para el Bizarro Dive Bar, te recomiendo <strong>Netlify</strong> por su facilidad y velocidad.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: GITHUB PAGES -->
+        <div id="tab-github" class="tab-content active">
+            <div class="step">
+                <span class="step-number">1</span>
+                <span class="step-title">Crear Cuenta en GitHub</span>
+                <div class="step-content">
+                    <p>Si ya tienes cuenta, salta al paso 2.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🌐 Ir a: <strong style="color: #3B82F6;">https://github.com/signup</strong><br><br>
+                            📝 Completa:<br>
+                            • Email<br>
+                            • Contraseña<br>
+                            • Nombre de usuario<br><br>
+                            ✉️ Verifica tu email
+                        </div>
+                    </div>
+
+                    <div class="alert info">
+                        <strong>💡 Consejo:</strong> Elige un nombre de usuario profesional, será parte de tu URL: <code>tunombre.github.io</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-title">Crear Nuevo Repositorio</span>
+                <div class="step-content">
+                    <p>Un repositorio es como una carpeta en la nube para tu proyecto.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            ➕ Clic en botón verde <strong>"New"</strong> o <strong>"+"</strong><br><br>
+                            📝 Seleccionar: <strong>"New repository"</strong><br><br>
+                            ✍️ Nombre del repositorio: <strong style="color: #F5C518;">bizarro-bar</strong><br><br>
+                            🌍 Marcar: <strong>"Public"</strong><br><br>
+                            ✅ NO marcar "Add a README file"<br><br>
+                            🚀 Clic: <strong>"Create repository"</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert warning">
+                        <strong>⚠️ Importante:</strong> El nombre del repositorio será parte de tu URL. Usa solo letras minúsculas y guiones.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-title">Subir Archivos</span>
+                <div class="step-content">
+                    <p>Ahora vamos a subir tu aplicación completa.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            📤 Verás una página que dice:<br>
+                            <strong>"uploading an existing file"</strong><br><br>
+                            👆 HAZ CLIC en ese enlace<br><br>
+                            📂 Se abrirá un área que dice:<br>
+                            <strong style="color: #F5C518;">"Drag files here to add them to your repository"</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert success">
+                        <strong>✅ Qué Arrastrar:</strong> Selecciona TODOS los archivos y carpetas del proyecto Bizarro Bar
+                    </div>
+
+                    <div class="file-tree">
+                        <div style="color: #F5C518; margin-bottom: 1rem;">Selecciona y arrastra estos elementos:</div>
+                        <div class="checklist-item">index.html</div>
+                        <div class="checklist-item">manifest.json</div>
+                        <div class="checklist-item">README.md</div>
+                        <div class="checklist-item">Carpeta css/ (completa)</div>
+                        <div class="checklist-item">Carpeta js/ (completa)</div>
+                    </div>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🖱️ <strong>ARRASTRA</strong> los 5 elementos juntos<br>
+                            a la ventana de GitHub<br><br>
+                            ⏳ Espera que suban (barras de progreso)<br><br>
+                            💬 Abajo verás: "Commit changes"<br><br>
+                            📝 (Opcional) Escribe: "Primera versión del sistema"<br><br>
+                            ✅ Clic: <strong style="color: #10B981;">"Commit changes"</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert info">
+                        <strong>💡 Tip:</strong> GitHub mantiene la estructura de carpetas automáticamente. No necesitas hacer nada especial.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <span class="step-title">Verificar Archivos</span>
+                <div class="step-content">
+                    <p>Asegúrate de que todo se haya subido correctamente.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            Debes ver esta estructura en GitHub:<br><br>
+                            📄 <strong>index.html</strong> ✅<br>
+                            📄 <strong>manifest.json</strong> ✅<br>
+                            📄 <strong>README.md</strong> ✅<br>
+                            📁 <strong>css</strong> ✅<br>
+                            📁 <strong>js</strong> ✅
+                        </div>
+                    </div>
+
+                    <div class="alert success">
+                        <strong>✅ Perfecto:</strong> Si ves estos 5 elementos, todo está correcto.
+                    </div>
+
+                    <div class="alert warning">
+                        <strong>⚠️ Si falta algo:</strong> Puedes volver a subir los archivos faltantes con "Add file" → "Upload files"
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">5</span>
+                <span class="step-title">Activar GitHub Pages</span>
+                <div class="step-content">
+                    <p>Este paso hace que tu aplicación sea accesible desde internet.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            ⚙️ Clic en: <strong>"Settings"</strong><br>
+                            (pestaña arriba, junto a Code)<br><br>
+                            📄 En el menú lateral izquierdo:<br>
+                            Busca y clic en: <strong>"Pages"</strong><br><br>
+                            🌿 En "Source" selecciona: <strong>"main"</strong><br><br>
+                            📁 En "Folder" deja: <strong>"/ (root)"</strong><br><br>
+                            💾 Clic: <strong style="color: #10B981;">"Save"</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert success">
+                        <strong>🎉 ¡Listo!</strong> GitHub tardará 1-2 minutos en publicar tu sitio.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">6</span>
+                <span class="step-title">Obtener tu URL</span>
+                <div class="step-content">
+                    <p>Tu aplicación ya está en línea. Ahora vamos a encontrar la URL.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🔄 Recarga la página de Settings → Pages<br><br>
+                            Verás un mensaje verde:<br>
+                            <strong style="color: #10B981;">"Your site is published at:"</strong><br><br>
+                            🔗 Tu URL será algo como:<br>
+                            <code style="color: #F5C518; font-size: 1.2rem;">
+                                https://tu-usuario.github.io/bizarro-bar/
+                            </code>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        # Ejemplo de URL:<br>
+                        https://juanperez.github.io/bizarro-bar/<br><br>
+                        # Formato:<br>
+                        https://[tu-usuario].github.io/[nombre-repo]/
+                    </div>
+
+                    <div class="alert success">
+                        <strong>🎊 ¡FELICIDADES!</strong> Tu Sistema de Control de Gastos del Bizarro Dive Bar está en línea.
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="#" class="btn" onclick="alert('Copia tu URL de GitHub Pages y ábrela en una nueva pestaña')">
+                            🌐 Abrir Mi Aplicación
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">✅</span>
+                <span class="step-title">Probar la Aplicación</span>
+                <div class="step-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 1</div>
+                            <div>Abre tu URL en el navegador</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 2</div>
+                            <div>Verás la pantalla de login del Bizarro Dive Bar</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 3</div>
+                            <div>Inicia sesión con: <code>admin</code> / <code>admin123</code></div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 4</div>
+                            <div>¡Explora tu sistema de control de gastos!</div>
+                        </div>
+                    </div>
+
+                    <div class="alert info">
+                        <strong>📱 Para usar en celular:</strong><br>
+                        1. Abre la URL en Chrome/Safari móvil<br>
+                        2. Busca "Agregar a pantalla de inicio"<br>
+                        3. Instala la PWA<br>
+                        4. ¡Ahora tienes una app nativa!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: NETLIFY -->
+        <div id="tab-netlify" class="tab-content">
+            <div class="alert success">
+                <strong>🌟 Opción Recomendada:</strong> Netlify es la forma más rápida y fácil de publicar tu aplicación.
+            </div>
+
+            <div class="step">
+                <span class="step-number">1</span>
+                <span class="step-title">Crear Cuenta en Netlify</span>
+                <div class="step-content">
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🌐 Ir a: <strong style="color: #3B82F6;">https://www.netlify.com</strong><br><br>
+                            👆 Clic: <strong>"Sign up"</strong><br><br>
+                            📧 Registrarte con:<br>
+                            • Email<br>
+                            • O con GitHub (más rápido)<br><br>
+                            ✉️ Verifica tu email
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-title">Deploy Manual</span>
+                <div class="step-content">
+                    <p>Netlify permite subir tu sitio arrastrando la carpeta completa.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            ➕ Clic: <strong>"Add new site"</strong><br><br>
+                            📤 Selecciona: <strong>"Deploy manually"</strong><br><br>
+                            📂 Verás un área grande que dice:<br>
+                            <strong style="color: #F5C518;">"Drag and drop your site folder here"</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert warning">
+                        <strong>⚠️ IMPORTANTE:</strong> Arrastra la CARPETA COMPLETA que contiene todos los archivos, no los archivos sueltos.
+                    </div>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🖱️ <strong>ARRASTRA</strong> la carpeta<br>
+                            "bizarro-bar" completa<br><br>
+                            (Debe contener: index.html, css/, js/, etc.)<br><br>
+                            ⏳ Espera 30 segundos...<br><br>
+                            ✅ <strong style="color: #10B981;">Deploy complete!</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-title">Obtener tu URL</span>
+                <div class="step-content">
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🎉 Netlify asigna automáticamente una URL:<br><br>
+                            <code style="color: #F5C518; font-size: 1.2rem;">
+                                https://random-name-123.netlify.app
+                            </code><br><br>
+                            Tu aplicación YA está en línea ✅
+                        </div>
+                    </div>
+
+                    <div class="alert success">
+                        <strong>⚡ Ultra Rápido:</strong> De subir archivos a aplicación en línea en 30 segundos.
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <span class="step-title">Personalizar URL (Opcional)</span>
+                <div class="step-content">
+                    <p>Puedes cambiar el nombre aleatorio por algo más profesional.</p>
+
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            ⚙️ Clic: <strong>"Site settings"</strong><br><br>
+                            📝 Busca: <strong>"Change site name"</strong><br><br>
+                            ✍️ Escribe: <strong style="color: #F5C518;">bizarro-bar</strong><br><br>
+                            💾 Clic: <strong>"Save"</strong>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        # Tu nueva URL será:<br>
+                        https://bizarro-bar.netlify.app<br><br>
+                        # ¡Mucho mejor! 🎉
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="#" class="btn" onclick="alert('¡Tu aplicación está lista! Abre tu URL de Netlify.')">
+                            🚀 Abrir Mi Aplicación
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">🔄</span>
+                <span class="step-title">Actualizar tu Sitio</span>
+                <div class="step-content">
+                    <p>Para actualizar tu aplicación en el futuro:</p>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 1</div>
+                            <div>Ve a tu panel de Netlify</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 2</div>
+                            <div>Clic en "Deploys"</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 3</div>
+                            <div>Arrastra la carpeta actualizada</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-time">Paso 4</div>
+                            <div>¡Actualización en 30 segundos!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: VERCEL -->
+        <div id="tab-vercel" class="tab-content">
+            <div class="step">
+                <span class="step-number">1</span>
+                <span class="step-title">Crear Cuenta en Vercel</span>
+                <div class="step-content">
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🌐 Ir a: <strong style="color: #3B82F6;">https://vercel.com</strong><br><br>
+                            👆 Clic: <strong>"Sign Up"</strong><br><br>
+                            Registrarte con GitHub (recomendado)<br>
+                            o con Email
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <span class="step-title">Crear Nuevo Proyecto</span>
+                <div class="step-content">
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            ➕ Clic: <strong>"Add New..."</strong><br><br>
+                            📋 Selecciona: <strong>"Project"</strong><br><br>
+                            📤 Clic: <strong>"Deploy"</strong> (botón azul)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-title">Subir Archivos</span>
+                <div class="step-content">
+                    <div class="screenshot">
+                        <div class="screenshot-content">
+                            🖱️ <strong>ARRASTRA</strong> la carpeta<br>
+                            "bizarro-bar" completa<br><br>
+                            ⏳ Vercel procesa y optimiza...<br><br>
+                            ✅ <strong style="color: #10B981;">Deployment Ready!</strong>
+                        </div>
+                    </div>
+
+                    <div class="code-block">
+                        # Tu URL será algo como:<br>
+                        https://bizarro-bar-abc123.vercel.app<br><br>
+                        # ¡En 1 minuto está en línea! ⚡
+                    </div>
+
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="#" class="btn" onclick="alert('¡Felicidades! Tu app está publicada.')">
+                            🎊 Ver Mi Aplicación
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER CON CONSEJOS -->
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #3A3A3A;">
+            <div class="alert info">
+                <h3 style="margin-bottom: 1rem;">💡 Consejos Finales</h3>
+                <ul style="padding-left: 1.5rem; line-height: 2;">
+                    <li>Guarda tu URL en un lugar seguro</li>
+                    <li>Comparte la URL con los empleados del bar</li>
+                    <li>Prueba la aplicación desde diferentes dispositivos</li>
+                    <li>Instala la PWA en celulares para acceso rápido</li>
+                    <li>Haz backups periódicos exportando los datos</li>
+                </ul>
+            </div>
+
+            <div class="alert success" style="margin-top: 1rem;">
+                <h3 style="margin-bottom: 1rem;">🎉 ¡Felicidades!</h3>
+                <p>Tu Sistema de Control de Gastos del <strong>Bizarro Dive Bar</strong> está ahora en línea y listo para usar.</p>
+                <p style="margin-top: 1rem;">Usuarios: <code>admin/admin123</code>, <code>capturista/cap123</code>, <code>consulta/cons123</code></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Ocultar todos los tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Remover clase active de todos los botones
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Mostrar tab seleccionado
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
